@@ -1,0 +1,115 @@
+class Solution {
+
+    List<List<String>> result = new ArrayList<>();
+
+    Map<String, List<String>> graph = new HashMap<>();
+
+    public List<List<String>> findLadders(
+            String beginWord,
+            String endWord,
+            List<String> wordList) {
+
+        Set<String> words = new HashSet<>(wordList);
+
+        if (!words.contains(endWord)) {
+            return result;
+        }
+
+        Map<String, Integer> distance = new HashMap<>();
+
+        Queue<String> queue = new LinkedList<>();
+
+        queue.offer(beginWord);
+        distance.put(beginWord, 0);
+
+        while (!queue.isEmpty()) {
+
+            String word = queue.poll();
+            int currentDistance = distance.get(word);
+
+            for (String next : getNextWords(word, words)) {
+
+                if (!distance.containsKey(next)) {
+
+                    distance.put(next, currentDistance + 1);
+                    queue.offer(next);
+                }
+
+                if (distance.get(next) ==
+                    currentDistance + 1) {
+
+                    graph.computeIfAbsent(word,
+                        k -> new ArrayList<>()).add(next);
+                }
+            }
+        }
+
+        if (!distance.containsKey(endWord)) {
+            return result;
+        }
+
+        List<String> path = new ArrayList<>();
+        path.add(beginWord);
+
+        backtrack(beginWord, endWord, path);
+
+        return result;
+    }
+
+    void backtrack(
+            String word,
+            String endWord,
+            List<String> path) {
+
+        if (word.equals(endWord)) {
+            result.add(new ArrayList<>(path));
+            return;
+        }
+
+        if (!graph.containsKey(word)) {
+            return;
+        }
+
+        for (String next : graph.get(word)) {
+
+            path.add(next);
+
+            backtrack(next, endWord, path);
+
+            path.remove(path.size() - 1);
+        }
+    }
+
+    List<String> getNextWords(
+            String word,
+            Set<String> words) {
+
+        List<String> result = new ArrayList<>();
+
+        char[] chars = word.toCharArray();
+
+        for (int i = 0; i < chars.length; i++) {
+
+            char original = chars[i];
+
+            for (char c = 'a'; c <= 'z'; c++) {
+
+                if (c == original) {
+                    continue;
+                }
+
+                chars[i] = c;
+
+                String next = new String(chars);
+
+                if (words.contains(next)) {
+                    result.add(next);
+                }
+            }
+
+            chars[i] = original;
+        }
+
+        return result;
+    }
+}
