@@ -1,0 +1,52 @@
+import java.util.*;
+
+class Main {
+
+    static class Node {
+        int value;
+        int row;
+        int index;
+
+        Node(int value, int row, int index) {
+            this.value = value;
+            this.row = row;
+            this.index = index;
+        }
+    }
+
+    public static void main(String[] args) {
+
+        int[][] a = {
+            {1, 4, 7},
+            {2, 5, 8},
+            {3, 6, 9}
+        };
+
+        PriorityQueue<Node> pq =
+            new PriorityQueue<>(
+                (x, y) -> x.value - y.value
+            );
+
+        for (int i = 0; i < a.length; i++) {
+            pq.add(new Node(a[i][0], i, 0));
+        }
+
+        while (!pq.isEmpty()) {
+
+            Node current = pq.poll();
+
+            System.out.print(current.value + " ");
+
+            int nextIndex = current.index + 1;
+
+            if (nextIndex < a[current.row].length) {
+
+                pq.add(new Node(
+                    a[current.row][nextIndex],
+                    current.row,
+                    nextIndex
+                ));
+            }
+        }
+    }
+}
